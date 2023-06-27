@@ -1,141 +1,255 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
-void main() {
+List<HorrorMovie> horrors = [];
+
+void main()
+{
   runApp(const MyApp());
+
+  HorrorMovie m1 = HorrorMovie("A Quiet Place", 4.3);
+  HorrorMovie m2 = HorrorMovie("It", 4.4);
+  HorrorMovie m3 = HorrorMovie("Psycho", 4.6);
+  HorrorMovie m4 = HorrorMovie("Saw", 4.5);
+  HorrorMovie m5 = HorrorMovie("The Thing", 4.7);
+
+  horrors.add(m1);
+  horrors.add(m2);
+  horrors.add(m3);
+  horrors.add(m4);
+  horrors.add(m5);
+
+  m1.language = "Chinese";
+  m2.language = "English";
+  m3.language = "French";
+  m4.language = "German";
+  m5.language = "Russian";
 }
 
-class MyApp extends StatelessWidget {
+// Класс виджета приложения без состояний (StatelessWidget)
+class MyApp extends StatelessWidget
+{
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // Переопределяем метод build, который отвечает за создание виджета, а также
+  // за то как он будет выглядеть
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
+    // Виджет MaterialApp предназначен для создания графического интерфейса в
+    // стиле Material Design (Android)
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple[100]!),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // Свойство home - это то, что будет отображаться на главном экране приложения
+      home: const MyHomePage(title: "Movies List"),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+// Класс виджета главного экрана приложения с состояниями (StatefulWidget)
+class MyHomePage extends StatefulWidget
+{
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
+  // Создаём начальное состояние
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+// Класс начального состояния виджета MyHomePage
+class _MyHomePageState extends State<MyHomePage>
+{
+  List<MovieCardWidget> horrorsList = [];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  // Асинхронные методы можно вызывать только из асинхронных функций
+  void _generateListOfMovies() async
+  {
+    horrorsList = await listOfMovies(); // Вызов асинхронного метода
+  }
+
+  // Функция для фильтрации фильмов по рейтингу
+  void horrorsRatingSort()
+  {
+    horrorsList.sort((a, b) => b.m.rating!.compareTo(a.m.rating!));
+  }
+
+  // Переопределяем метод initState, который отвечает за инициализацию виджета
+  @override
+  void initState()
+  {
+    super.initState();
+
+    // Функция setState обновляет состояние виджета, перерисовывает его и его потомков
+    setState(()
+    {
+      _generateListOfMovies();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+  Widget build(BuildContext context)
+  {
+    // Scaffold - виджет для компоновки пользовательского интерфейса
     return Scaffold(
+      // AppBar - виджет верхнего меню
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: const Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: _InnerWidget()
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 300,
+              // ListView - виджет списка
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                // В качестве элементов списка ListView указываем список фильмов,
+                // который мы получили выше во вспомогательной функции _generateListOfMovies
+                children: [...horrorsList],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 145, right: 145),
+              child: ElevatedButton(
+                  // Функция, которая вызывается по нажатию на кнопку
+                  onPressed: ()
+                  {
+                    // Сортируем список фильмов по убыванию рейтинга
+                    horrorsRatingSort();
+                    // Обновляем состояние виджета, чтобы увидеть изменения
+                    setState(() { });
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.star,
+                      ),
+                      Text("Sort")
+                    ],
+                  )
+              ),
+            )
+          ],
+        ),
+      ), backgroundColor: Colors.black,
     );
   }
 }
 
-class _InnerWidget extends StatefulWidget 
+abstract class Movie
 {
-  const _InnerWidget({super.key});
+  String? id, title, picture, releaseDate, description, language;
+  double? rating;
 
-  @override
-  State<_InnerWidget> createState() => _InnerWidgetState();
+  Movie.build(this.title, this.rating); // Конструктор для дочернего класса
 }
 
-class _InnerWidgetState extends State<_InnerWidget> 
+class HorrorMovie extends Movie
 {
-  late Color buttonColor;
+  HorrorMovie(title, rating) : super.build(title, rating);
+}
 
-  @override
-  void initState()
+// Асинхронный метод, который возвращает список фильмов
+Future listOfMovies() async
+{
+  List<MovieCardWidget> tempList = [];
+  Iterator i = horrors.iterator; // Получаем итератор списка для его перебора
+
+  while (i.moveNext())
   {
-    buttonColor = Colors.blue;
-
-    super.initState();
+    tempList.add(MovieCardWidget(m: i.current));
   }
 
-  @override
-  Widget build(BuildContext context) 
-  {
-    bool isPressed = false;
+  return tempList;
+}
 
-    return ElevatedButton(onPressed: ()
-    {
-      setState(()
-      {
-          if (buttonColor == Colors.blue)
-          {
-              buttonColor = Colors.red;
-          }
-          else
-          {
-              buttonColor = Colors.blue;
-          }
-      });
-    },
-        style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(buttonColor),
-            foregroundColor: const MaterialStatePropertyAll(Colors.black)),
-        child: const Text("Button"));
+// Класс виджета карточки фильма с состояниями
+class MovieCardWidget extends StatefulWidget 
+{
+  final HorrorMovie m;
+
+  // required - обязательный параметр
+  const MovieCardWidget({super.key, required this.m});
+
+  @override
+  State<MovieCardWidget> createState() => _MovieCardWidgetState();
+}
+
+class _MovieCardWidgetState extends State<MovieCardWidget> 
+{
+  @override
+  void initState() { super.initState(); }
+
+  @override
+  Widget build(BuildContext context)
+  {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Card(
+          color: Colors.purple[200],
+          child: SizedBox(
+            height: 285,
+            width: 150,
+            child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                          // widget - любой из экземпляров данного виджета
+                          "assets/${widget.m.title.toString().toLowerCase()}.jpeg",
+                          width: 140,
+                          height: 200,
+                          fit: BoxFit.cover,
+                      ),
+                    ),
+                    Text(
+                        widget.m.title.toString(),
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                        ),
+                    ),
+                    Text(
+                        widget.m.language.toString(),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontStyle: FontStyle.italic
+                        ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                        ),
+                        Text(
+                          widget.m.rating.toString(),
+                          style: const TextStyle(
+                            color: Colors.red,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                )
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
