@@ -4,7 +4,10 @@ import 'package:lesson_3_homework/app/widgets/news_card_widget.dart';
 
 // Виджет списка новостей из киноиндустрии
 class NewsList extends StatefulWidget {
-  const NewsList({super.key});
+  // Получаем callback-метод для отображения деталей выбранной новости
+  const NewsList(this.showNewsDetails, {super.key});
+
+  final Function showNewsDetails;
 
   static final List<NewsCardModel> news = <NewsCardModel>[
     NewsCardModel(
@@ -74,7 +77,11 @@ class _NewsListState extends State<NewsList> {
       itemBuilder: (BuildContext context, int listElementIndex) {
         // Виджет GestureDetector - детектор жестов. В данном случае, жест нажатия на определённую карточку новости
         return GestureDetector(
-          onTap: () {},
+          onTap: () {
+            // При нажатии на определённую новость из списка, передаём её по индексу в callback-метод,
+            // тем самым вызывая его и обновляя состояние родителя данного виджета, а именно его параметр body
+            widget.showNewsDetails(NewsList.news[listElementIndex]);
+          },
           child: NewsCardWidget.fromModel(
             // Последовательный перебор элементов списка новостей по индексу и их отображение
             model: NewsList.news[listElementIndex],

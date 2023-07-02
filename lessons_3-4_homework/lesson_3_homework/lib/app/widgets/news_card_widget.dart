@@ -51,11 +51,14 @@ class NewsCardWidget extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
+              // Выравнивание виджетов-потомков по горизонтальной оси
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   releaseDate,
                   maxLines: 1,
+                  // Если текст не помещается в свой контейнер, то добавляем
+                  // в его конец троеточие...
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
@@ -75,6 +78,9 @@ class NewsCardWidget extends StatelessWidget {
                 ),
                 Text(
                   description,
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                  // Выравнивание текста по всей ширине контейнера
                   textAlign: TextAlign.justify,
                   style: const TextStyle(
                     color: Colors.white,

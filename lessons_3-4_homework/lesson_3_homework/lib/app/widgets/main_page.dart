@@ -15,14 +15,14 @@ class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
   // Список страниц в нижнем навигационном меню
-  static const List<Tab> tabs = [
-    Tab(
+  static List<Tab> tabs = [
+    const Tab(
       icon: Icon(Icons.local_movies_outlined),
       label: "Feed",
       page: HomePage(title: "Movies"), // Страница со списком фильмов
     ),
     Tab(
-      icon: Icon(Icons.newspaper),
+      icon: const Icon(Icons.newspaper),
       label: "News",
       page: NewsPage(title: "News"), // Страница со списком новостей
     ),
