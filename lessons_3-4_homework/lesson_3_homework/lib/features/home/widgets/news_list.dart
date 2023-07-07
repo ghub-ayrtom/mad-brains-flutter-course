@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lesson_3_homework/app/models/news_card_model.dart';
 import 'package:lesson_3_homework/app/widgets/news_card_widget.dart';
+import 'package:lesson_3_homework/features/home/pages/news_details.dart';
 
 // Виджет списка новостей из киноиндустрии
 class NewsList extends StatefulWidget {
-  // Получаем callback-метод для отображения деталей выбранной новости
-  const NewsList(this.showNewsDetails, {super.key});
-
-  final Function showNewsDetails;
+  const NewsList({super.key});
 
   static final List<NewsCardModel> news = <NewsCardModel>[
     NewsCardModel(
@@ -78,9 +76,17 @@ class _NewsListState extends State<NewsList> {
         // Виджет GestureDetector - детектор жестов. В данном случае, жест нажатия на определённую карточку новости
         return GestureDetector(
           onTap: () {
-            // При нажатии на определённую новость из списка, передаём её по индексу в callback-метод,
-            // тем самым вызывая его и обновляя состояние родителя данного виджета, а именно его параметр body
-            widget.showNewsDetails(NewsList.news[listElementIndex]);
+            // При нажатии на определённую новость из списка, используя декларативный подход,
+            // вызываем метод pushNamed у Navigator, в который передаём путь path
+            // страницы на которую осуществляется переход и элемент списка новостей по его
+            // индексу, который выступает в качестве аргумента классу NewsDetailsArguments.
+            // Таким образом, на вершину стека Navigator помещается новая страница
+            // (в данном случае - NewsDetails), которая открывается поверх текущей
+            Navigator.pushNamed(
+              context,
+              "/details",
+              arguments: NewsDetailsArguments(NewsList.news[listElementIndex]),
+            );
           },
           child: NewsCardWidget.fromModel(
             // Последовательный перебор элементов списка новостей по индексу и их отображение

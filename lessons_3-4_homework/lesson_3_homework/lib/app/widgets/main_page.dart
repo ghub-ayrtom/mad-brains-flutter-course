@@ -21,12 +21,15 @@ class MainPage extends StatefulWidget {
       label: "Feed",
       page: HomePage(title: "Movies"), // Страница со списком фильмов
     ),
-    Tab(
-      icon: const Icon(Icons.newspaper),
+    const Tab(
+      icon: Icon(Icons.newspaper),
       label: "News",
       page: NewsPage(title: "News"), // Страница со списком новостей
     ),
   ];
+
+  // Именованный путь для метода Navigator.pushNamed
+  static const path = "/main";
 
   @override
   State<MainPage> createState() => _MainPageState();

@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:lesson_3_homework/app/widgets/main_page.dart';
+import 'package:lesson_3_homework/features/home/pages/news_details.dart';
 
 void main() {
   runApp(const MyApp()); // Запуск приложения
@@ -25,8 +26,34 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple[100]!),
         useMaterial3: true,
       ),
-      // Свойство home - это то, что будет отображаться на главном экране приложения
-      home: const MainPage(),
+      // В свойстве initialRoute находится путь страницы, которая
+      // будет отображаться на главном экране приложения при запуске
+      initialRoute: MainPage.path,
+      // Свойство onGenerateRoute позволяет получить объект класса RouteSettings,
+      // из которого можно узнать на какую страницу мы переходим
+      onGenerateRoute: (RouteSettings settings) {
+        if (settings.name == MainPage.path) {
+          return MaterialPageRoute(
+            builder: (context) {
+              return const MainPage();
+            },
+          );
+        }
+
+        // Если путь перехода совпадает в заданным
+        if (settings.name == NewsDetails.path) {
+          // Формируем аргументы из Object settings.arguments
+          final NewsDetailsArguments arguments =
+              settings.arguments as NewsDetailsArguments;
+          return MaterialPageRoute(
+            builder: (context) {
+              return NewsDetails(arguments: arguments);
+            },
+          );
+        }
+
+        return null;
+      },
     );
   }
 }
