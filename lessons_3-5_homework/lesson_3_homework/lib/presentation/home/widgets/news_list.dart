@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lesson_3_homework/domain/models/news_card_model.dart';
-import 'package:lesson_3_homework/app/widgets/news_card_widget.dart';
+import 'package:lesson_3_homework/presentation/app/widgets/news_card_widget.dart';
 import 'package:lesson_3_homework/presentation/home/pages/news_details.dart';
 
 // Виджет списка новостей из киноиндустрии

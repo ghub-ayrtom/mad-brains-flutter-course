@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:lesson_3_homework/components/constants.dart';
+import 'package:lesson_3_homework/presentation/home/pages/home_page.dart';
 
 // Метод вызова диалога с ошибкой
-void showExceptionDialog(BuildContext context, {required String exception}) {
-  showDialog(
-    context: context,
-    builder: (_) => ExceptionDialog(exception),
-  );
+void showExceptionDialog({BuildContext? context, required String exception}) {
+  // Так как диалог всегда отображается в конкретном контексте, то необходимо
+  // либо передать его из определённого окна приложения, либо взять контекст
+  // главного экрана приложения по глобальному статическому ключу
+  final inContext = context ?? HomePage.globalKey.currentContext;
+
+  if (inContext != null) {
+    showDialog(
+      context: inContext,
+      builder: (_) => ExceptionDialog(exception),
+    );
+  }
 }
 
 // Виджет простого диалога с ошибкой

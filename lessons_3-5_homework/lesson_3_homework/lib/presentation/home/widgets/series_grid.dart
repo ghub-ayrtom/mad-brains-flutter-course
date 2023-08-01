@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
-import 'package:lesson_3_homework/app/widgets/show_card_widget.dart';
 import 'package:lesson_3_homework/components/constants.dart';
 import 'package:lesson_3_homework/domain/models/home_model.dart';
+import 'package:lesson_3_homework/presentation/app/widgets/show_card_widget.dart';
 
 // Виджет сетки списка сериалов
 class SeriesGrid extends StatefulWidget {

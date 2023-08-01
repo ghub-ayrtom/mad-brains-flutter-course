@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lesson_3_homework/domain/models/show_card_model.dart';
-import 'package:lesson_3_homework/presentation/home/widgets/image_network.dart';
+import 'package:lesson_3_homework/presentation/app/widgets/image_network.dart';
 
 // Виджета карточки сериала без состояний
 class ShowCardWidget extends StatelessWidget {
