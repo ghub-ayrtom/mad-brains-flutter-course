@@ -7,12 +7,14 @@ import 'package:flutter/material.dart';
 // подходов к state management (управлению состояниями виджетов) во Flutter.
 // В BLoC каждое окно приложения отделено своей логикой от других
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lesson_3_homework/components/constants.dart';
 import 'package:lesson_3_homework/data/repositories/series_repository.dart';
 import 'package:lesson_3_homework/error_bloc/error_bloc.dart';
 import 'package:lesson_3_homework/error_bloc/error_event.dart';
 import 'package:lesson_3_homework/presentation/app/widgets/main_page.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_bloc.dart';
 import 'package:lesson_3_homework/presentation/home/pages/news_details.dart';
+import 'package:lesson_3_homework/presentation/settings/pages/settings_page.dart';
 
 void main() {
   runApp(const MyApp()); // Запуск приложения
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
     // Виджет MaterialApp предназначен для создания графического интерфейса в
     // стиле Material Design (Android)
     return MaterialApp(
-      title: 'Series List App',
+      title: Local.appTitle,
       // BlocProvider - модифицированный Provider для использования BLoC.
       // Позволяет получить доступ к экземпляру BLoC во всех дочерних виджетах
       // через обращение к BuildContext
@@ -55,7 +57,6 @@ class MyApp extends StatelessWidget {
                   );
             },
           ),
-          // BlocProvider главного экрана приложения (желательно перенести его туда)
           child: BlocProvider<HomeBloc>(
             lazy: false,
             create: (BuildContext context) => HomeBloc(
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
       // Свойство onGenerateRoute позволяет получить объект класса RouteSettings,
       // из которого можно узнать на какую страницу мы переходим
       onGenerateRoute: (RouteSettings settings) {
-        // Если путь перехода совпадает в заданным
+        // Если путь перехода совпадает в заданным (страница новостей)
         if (settings.name == NewsDetails.path) {
           // Формируем аргументы из Object settings.arguments
           final NewsDetailsArguments arguments =
@@ -76,6 +77,15 @@ class MyApp extends StatelessWidget {
           return MaterialPageRoute(
             builder: (context) {
               return NewsDetails(arguments: arguments);
+            },
+          );
+        }
+
+        // Переход на страницу настроек
+        if (settings.name == SettingsPage.path) {
+          return MaterialPageRoute(
+            builder: (context) {
+              return const SettingsPage();
             },
           );
         }

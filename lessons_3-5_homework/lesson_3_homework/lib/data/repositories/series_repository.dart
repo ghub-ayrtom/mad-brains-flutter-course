@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:lesson_3_homework/components/constants.dart';
+import 'package:drift/drift.dart';
+import 'package:lesson_3_homework/components/constants.dart' as constant;
+import 'package:lesson_3_homework/data/db/database.dart';
 import 'package:lesson_3_homework/data/dtos/show_card_dto.dart';
 import 'package:lesson_3_homework/data/mappers/show_mapper.dart';
 import 'package:lesson_3_homework/data/repositories/interceptors/dio_error_interceptor.dart';
@@ -13,6 +15,8 @@ class SeriesRepository {
   final Function(String, String) onErrorHandler;
   // Основной объект библиотеки Dio для выполнения HTTP-запросов
   late final Dio _dio;
+  // Основной объект базы данных библиотеки Drift
+  late final Database _db;
 
   SeriesRepository({required this.onErrorHandler}) {
     _dio = Dio()
@@ -25,18 +29,21 @@ class SeriesRepository {
         // (файл dio_error_interceptor.dart)
         ErrorInterceptor(onErrorHandler),
       ]);
+
+    _db = Database(); // Инициализируем базу данных
   }
 
   // Метод для получения данных.
   // Благодаря использованию BLoC, удалось избавиться от контекста и отделить
   // бизнес-логику приложения от пользовательского интерфейса (UI)
-  Future<HomeModel?> loadData([String q = ""]) async {
+  Future<HomeModel?> loadData([String searchQuery = ""]) async {
     final Response<dynamic> response;
 
     // Если строка поиска конкретного сериала не пуста (осуществляется поиск)
-    if (q != "") {
+    if (searchQuery != "") {
       // Формируем URL-адрес с названием сериала для выполнения по нему HTTP-запроса
-      String rapidApiUrlSearch = "${Query.rapidApiUrlSearch}/$q";
+      String rapidApiUrlSearch =
+          "${constant.Query.rapidApiUrlSearch}/$searchQuery";
 
       // Выполняем запрос
       response = await _dio.get<Map<String, dynamic>>(rapidApiUrlSearch,
@@ -49,7 +56,7 @@ class SeriesRepository {
     } else {
       // Иначе формируем URL-адрес для получения по нему списка 250 сериалов с
       // наивысшим рейтингом
-      const String rapidApiUrl = Query.rapidApiUrl;
+      const String rapidApiUrl = constant.Query.rapidApiUrl;
 
       response = await _dio.get<Map<String, dynamic>>(
         rapidApiUrl,
@@ -72,7 +79,7 @@ class SeriesRepository {
       dtos.add(ShowCardDataDTO.fromJson(data as Map<String, dynamic>));
     }
 
-    const String tvMazeApiUrl = Query.tvMazeApiUrl;
+    const String tvMazeApiUrl = constant.Query.tvMazeApiUrl;
     final showModels = <ShowCardModel>[];
 
     // Преобразуем DTO в модели с помощью mapper
@@ -121,5 +128,64 @@ class SeriesRepository {
     // Собираем все преобразованные модели карточек сериалов в единую общую модель
     final HomeModel model = HomeModel(showModels);
     return model; // Возвращаем её
+  }
+
+  // Асинхронный метод (возвращает результаты не сразу) для работы с БД, который
+  // позволяет получить весь список избранных (favorites) сериалов из неё
+  Future<HomeModel?> getAllSeries() async {
+    // Получаем список объектов из базы данных в её моделях (SeriesTableData)
+    List<SeriesTableData> series = await _db.select(_db.seriesTable).get();
+
+    // Преобразуем модели БД (SeriesTableData) в единую общую модель (HomeModel)
+    // для её отображения на пользовательском интерфейсе (UI)
+    final HomeModel model = HomeModel(
+        series.map((SeriesTableData data) => data.toDomain()).toList());
+    return model;
+  }
+
+  // Метод для работы с БД, который позволяет получить искомый список избранных
+  // сериалов из неё
+  Future<HomeModel?> getSearchedSeries(String searchQuery) async {
+    // Если строка поиска не пустая
+    if (searchQuery.isNotEmpty) {
+      // Получаем список объектов из базы данных, которые содержат (contains) в
+      // своём названии (столбец title) искомую строку searchQuery
+      List<SeriesTableData> series = await (_db.select(_db.seriesTable)
+            ..where((table) => table.title.contains(searchQuery)))
+          .get();
+
+      final HomeModel model = HomeModel(
+          series.map((SeriesTableData data) => data.toDomain()).toList());
+      return model;
+    } else {
+      // Иначе, если строка поиска пустая, получаем весь список избранных сериалов
+      return getAllSeries();
+    }
+  }
+
+  // Метод для работы с БД, который позволяет добавить в неё избранный сериал
+  Future<void> insertShow(ShowCardModel model) async {
+    // Передаём чистую модель (ShowCardModel), преобразуя её в модель, понятную
+    // базе данных (SeriesTableData) с помощью метода toDatabase
+    // (файл show_card_model.dart)
+    await _db.into(_db.seriesTable).insert(
+          model.toDatabase(),
+          // Если подобной записи нет, то добавляем новую, иначе - обновляем старую
+          mode: InsertMode.insertOrReplace,
+        );
+  }
+
+  // Метод для работы с БД, который позволяет удалить из неё избранный сериал по
+  // его ID
+  Future<void> deleteShow(String id) async {
+    await (_db.delete(_db.seriesTable)..where((table) => table.id.equals(id)))
+        .go();
+  }
+
+  // Метод для работы с БД, который позволяет подписаться на любые изменения в ней
+  Stream<List<ShowCardModel>> onChangeShows() {
+    return (_db.select(_db.seriesTable))
+        .map((SeriesTableData data) => data.toDomain())
+        .watch();
   }
 }

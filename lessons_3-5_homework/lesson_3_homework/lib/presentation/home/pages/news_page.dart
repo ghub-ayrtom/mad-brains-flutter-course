@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lesson_3_homework/presentation/home/widgets/news_list.dart';
+import 'package:lesson_3_homework/presentation/settings/pages/settings_page.dart';
 
 // Виджет экрана со списком новостей
 class NewsPage extends StatefulWidget {
@@ -40,7 +41,10 @@ class NewsPageState extends State<NewsPage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              // Переход на страницу настроек
+              Navigator.pushNamed(context, SettingsPage.path);
+            },
             icon: const Icon(
               Icons.settings,
               color: Colors.black54,

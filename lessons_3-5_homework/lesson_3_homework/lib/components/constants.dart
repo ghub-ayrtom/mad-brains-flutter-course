@@ -13,8 +13,16 @@ class Query {
 class Local {
   static const String error = "Error";
   static const String unknown = "Unknown";
-  static const String search = "Search series...";
-  static const String newsPagesTitle = "News";
   static const String description = "Series Description";
+
+  static const String searchTextFieldHint = "Search series...";
+  static const String genreTextFieldHint = "Your favorite show genre...";
+
+  static const String appTitle = "Series List App";
+  static const String newsPagesTitle = "News";
+  static const String favoritesPageTitle = "Favorites";
+  static const String settingsPageTitle = "Settings";
+
   static const String homePageBNBText = "Feed";
+  static const String clearGenreButtonText = "Clear Genre";
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lesson_3_homework/components/constants.dart';
 import 'package:lesson_3_homework/domain/models/news_card_model.dart';
 import 'package:lesson_3_homework/presentation/app/widgets/image_network.dart';
+import 'package:lesson_3_homework/presentation/settings/pages/settings_page.dart';
 
 // Отдельный класс, через который передаются аргументы в Navigator
 class NewsDetailsArguments {
@@ -83,7 +84,10 @@ class NewsDetailsState extends State<NewsDetails> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              // Переход на страницу настроек
+              Navigator.pushNamed(context, SettingsPage.path);
+            },
             icon: const Icon(
               Icons.settings,
               color: Colors.black54,

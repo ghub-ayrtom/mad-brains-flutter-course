@@ -7,9 +7,10 @@ import 'package:lesson_3_homework/domain/models/show_card_model.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_bloc.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_event.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_state.dart';
-import 'package:lesson_3_homework/presentation/home/widgets/series_grid.dart';
+import 'package:lesson_3_homework/presentation/app/widgets/series_grid.dart';
+import 'package:lesson_3_homework/presentation/settings/pages/settings_page.dart';
 
-// Виджет главного экрана приложения с состояниями (StatefulWidget)
+// Страница с общим списком сериалов (Feed)
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -22,11 +23,10 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => HomePageState();
 }
 
-// Класс начального состояния виджета HomePage
 class HomePageState extends State<HomePage> {
   // Контроллер для работы с полем поиска конкретного сериала
   final TextEditingController searchController = TextEditingController();
-  // Список сериалов для их убывающей сортировки по IMDb-рейтингу
+  // Общий список сериалов для их убывающей сортировки по IMDb-рейтингу
   late List<ShowCardModel> series;
 
   // Данный метод вызывается каждый раз при изменениях в поле поиска
@@ -39,7 +39,7 @@ class HomePageState extends State<HomePage> {
       // Добавляем новое событие изменения поля поиска сериала в основной
       // BLoC-компонент главного экрана приложения, задавая новое значение для
       // определённого в состоянии поля searchQuery
-      context.read<HomeBloc>().add(SearchChangedEvent(
+      context.read<HomeBloc>().add(SearchChangeEvent(
           searchQuery: text.isNotEmpty ? text : Query.initialQ));
     });
   }
@@ -66,6 +66,14 @@ class HomePageState extends State<HomePage> {
     context.read<HomeBloc>().add(LoadDataEvent());
   }
 
+  // Метод для преобразования объекта Future<HomeModel?> в объект
+  // List<ShowCardModel> для отображения на пользовательском интерфейсе (UI)
+  Future<List<ShowCardModel>?> futureHomeModelToList(
+      Future<HomeModel?>? model) async {
+    HomeModel? inModel = await model;
+    return inModel?.results;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Scaffold - виджет для компоновки пользовательского интерфейса
@@ -88,7 +96,7 @@ class HomePageState extends State<HomePage> {
           style: const TextStyle(color: Colors.white),
           cursorColor: Colors.white,
           decoration: const InputDecoration(
-            hintText: Local.search,
+            hintText: Local.searchTextFieldHint,
             hintStyle: TextStyle(color: Colors.white54),
             border: InputBorder.none,
           ),
@@ -97,11 +105,14 @@ class HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              // По нажатию на данную кнопку, сортируем список сериалов по убыванию
-              // их рейтинга и обновляем состояние виджета
-              setState(() {
-                series.sort((a, b) => b.rating!.compareTo(a.rating!));
-              });
+              // По нажатию на данную кнопку, отправляем в HomeBloc событие
+              // сортировки списка сериалов по убыванию их рейтинга
+              // (подробнее в директории ../bloc)
+              context.read<HomeBloc>().add(
+                    SeriesRatingSortEvent(
+                      series: series,
+                    ),
+                  );
             },
             icon: const Icon(
               Icons.sort,
@@ -109,7 +120,10 @@ class HomePageState extends State<HomePage> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              // Переход на страницу настроек
+              Navigator.pushNamed(context, SettingsPage.path);
+            },
             icon: const Icon(
               Icons.settings,
               color: Colors.black54,
@@ -127,9 +141,19 @@ class HomePageState extends State<HomePage> {
         // нового события в основной BLoC-компонент
         // (не задано условие перерисовки buildWhen)
         child: BlocBuilder<HomeBloc, HomeState>(
-            // data - список сериалов конкретного состояния
-            buildWhen: (oldState, newState) => oldState.data != newState.data,
+            // data и favoriteShows - соответствующие списки сериалов
+            // конкретного состояния
+            buildWhen: (oldState, newState) =>
+                oldState.data != newState.data ||
+                oldState.favoriteShows != newState.favoriteShows,
             builder: (context, state) {
+              // Получаем из текущего состояния state основного BLoC-компонента
+              // список избранных сериалов и преобразуем его для корректного
+              // отображения в виджете SeriesGrid (../../app/widgets/series_grid.dart)
+              List<ShowCardModel>? favoriteShows;
+              futureHomeModelToList(state.favoriteShows)
+                  .then((shows) => favoriteShows = shows);
+
               // Список сериалов. FutureBuilder - виджет, который строится на основе
               // последнего снимка (snapshot) взаимодействия с Future
               return FutureBuilder<HomeModel?>(
@@ -150,10 +174,10 @@ class HomePageState extends State<HomePage> {
                       if (data.hasData) {
                         // Если данные не пустые
                         if (data.data?.results?.isNotEmpty == true) {
-                          // Сохраняем их в список сериалов и передаём для отображения
-                          // на UI в виджете GridView
+                          // Сохраняем их в общий список сериалов и передаём в
+                          // событие сортировки SeriesRatingSortEvent (см. выше)
                           series = data.data!.results!;
-                          return SeriesGrid(data);
+                          return SeriesGrid(data, favoriteShows);
                         }
                       }
                   }

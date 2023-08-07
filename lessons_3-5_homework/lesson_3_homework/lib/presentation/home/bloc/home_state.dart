@@ -10,21 +10,37 @@ class HomeState extends Equatable {
   final Future<HomeModel?>? data; // Список сериалов
   // Индекс текущей страницы в нижнем навигационном меню (BottomNavigationBar)
   final int? selectedTabIndex;
+  final Future<HomeModel?>? favoriteShows; // Список избранных сериалов
 
-  const HomeState({this.searchQuery, this.data, this.selectedTabIndex});
+  const HomeState({
+    this.searchQuery,
+    this.data,
+    this.selectedTabIndex,
+    this.favoriteShows,
+  });
 
   // Данный метод подменяет (копирует) состояние виджета с новыми
   // (необязательными) значениями полей
-  HomeState copyWith({String? search, Future<HomeModel?>? data, int? index}) =>
+  HomeState copyWith({
+    String? search,
+    Future<HomeModel?>? data,
+    int? index,
+    Future<HomeModel?>? shows,
+  }) =>
       HomeState(
-        searchQuery: search ?? searchQuery,
+        searchQuery: search ?? searchQuery, // ?? - if null
         data: data ?? this.data,
         selectedTabIndex: index ?? selectedTabIndex,
+        favoriteShows: shows ?? favoriteShows,
       );
 
   // Поля, по которым будет происходить сравнение двух отдельных состояний
   // (старого и нового)
   @override
-  List<Object> get props =>
-      [searchQuery ?? "", data ?? 0, selectedTabIndex ?? 0];
+  List<Object> get props => [
+        searchQuery ?? "",
+        data ?? 0,
+        selectedTabIndex ?? 0,
+        favoriteShows ?? []
+      ];
 }

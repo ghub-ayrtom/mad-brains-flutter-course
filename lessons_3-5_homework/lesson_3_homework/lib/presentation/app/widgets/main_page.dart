@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lesson_3_homework/components/constants.dart';
+import 'package:lesson_3_homework/presentation/home/pages/favorites_page.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_bloc.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_event.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_state.dart';
@@ -28,6 +29,12 @@ class MainPage extends StatefulWidget {
       page: HomePage(),
     ),
     const Tab(
+      icon: Icon(Icons.favorite),
+      label: Local.favoritesPageTitle,
+      // Страница со списком избранных (favorites) сериалов
+      page: FavoritesPage(),
+    ),
+    const Tab(
       icon: Icon(Icons.newspaper),
       label: Local.newsPagesTitle,
       // Страница со списком новостей
@@ -48,7 +55,7 @@ class _MainPageState extends State<MainPage> {
     // (BottomNavigationBar) в основной BLoC-компонент главного экрана приложения,
     // задавая новое значение для определённого в состоянии поля
     // selectedTabIndex - индекса текущей выбранной страницы (index)
-    context.read<HomeBloc>().add(TabSwitchedEvent(selectedTabIndex: index));
+    context.read<HomeBloc>().add(TabSwitchEvent(selectedTabIndex: index));
   }
 
   // Вспомогательный метод для добавления градиента в виджет BottomNavigationBar

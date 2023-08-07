@@ -29,34 +29,39 @@ class ExceptionDialog extends StatelessWidget {
       color: Colors.transparent,
       child: Center(
         child: Container(
-          padding: const EdgeInsets.all(20),
-          margin: const EdgeInsets.all(35),
+          width: 275,
+          height: 200,
           decoration: const BoxDecoration(
-            color: Colors.grey,
+            color: Colors.white,
             borderRadius: BorderRadius.all(
               Radius.circular(10),
             ),
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
               const Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  CloseButton(color: Colors.white),
+                  CloseButton(
+                    color: Colors.black54,
+                  ),
                 ],
               ),
               const Icon(
                 Icons.error,
-                color: Colors.white,
+                size: 50,
+                color: Colors.red,
               ),
-              const SizedBox(height: 12),
-              Text(
-                '${Local.error} ${exception ?? Local.unknown}',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(color: Colors.white),
+              Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: Text(
+                  textAlign: TextAlign.center,
+                  '${Local.error} ${exception ?? Local.unknown}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ],
           ),

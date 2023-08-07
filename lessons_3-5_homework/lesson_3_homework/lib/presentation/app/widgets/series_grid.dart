@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:html/parser.dart';
 import 'package:lesson_3_homework/components/constants.dart';
 import 'package:lesson_3_homework/domain/models/home_model.dart';
+import 'package:lesson_3_homework/domain/models/show_card_model.dart';
 import 'package:lesson_3_homework/presentation/app/widgets/show_card_widget.dart';
+import 'package:lesson_3_homework/presentation/home/bloc/home_bloc.dart';
+import 'package:lesson_3_homework/presentation/home/bloc/home_event.dart';
+import 'package:collection/collection.dart';
 
 // Виджет сетки списка сериалов
 class SeriesGrid extends StatefulWidget {
-  const SeriesGrid(this.data, {super.key});
+  const SeriesGrid(this.data, this.favoriteShows, {super.key});
 
   // Данные для отображения
-  final AsyncSnapshot<HomeModel?> data;
+  final AsyncSnapshot<HomeModel?> data; // на экране с общим списком сериалов
+  final List<ShowCardModel>?
+      favoriteShows; // на экране со списком избранных сериалов
 
   @override
   State<SeriesGrid> createState() => _SeriesGridState();
@@ -58,6 +65,20 @@ class _SeriesGridState extends State<SeriesGrid> {
       child: GridView.builder(
         itemCount: widget.data.data?.results?.length ?? 0,
         itemBuilder: (BuildContext context, int listElementIndex) {
+          // Если список избранных сериалов не пуст
+          if (widget.favoriteShows?.isNotEmpty == true) {
+            // Пытаемся найти в нём текущий отображаемый сериал по его ID
+            var favoriteShow = widget.favoriteShows?.firstWhereOrNull((show) =>
+                show.id == widget.data.data?.results?[listElementIndex].id);
+
+            // Если нашли
+            if (favoriteShow != null) {
+              // Делаем его избранным ещё раз, так как загрузка сериалов
+              // происходит из разных мест (API и БД)
+              widget.data.data?.results?[listElementIndex].isFavorite = true;
+            }
+          }
+
           // Виджет GestureDetector - детектор жестов. В данном случае, жест нажатия на определённую карточку сериала
           return GestureDetector(
             onTap: () {
@@ -81,19 +102,35 @@ class _SeriesGridState extends State<SeriesGrid> {
                   left: 10,
                   child: IconButton(
                     onPressed: () {
-                      setState(() {
-                        // Если сериал уже в избранном
-                        if (widget.data.data?.results?[listElementIndex]
-                                .isFavorite ??
-                            false) {
-                          widget.data.data?.results?[listElementIndex]
-                              .isFavorite = false; // Удаляем его оттуда
-                        } else {
-                          // Иначе делаем сериал избранным
-                          widget.data.data?.results?[listElementIndex]
-                              .isFavorite = true;
-                        }
-                      });
+                      // Если сериал уже в избранном
+                      if (widget.data.data?.results?[listElementIndex]
+                              .isFavorite ??
+                          false) {
+                        widget.data.data?.results?[listElementIndex]
+                            .isFavorite = false; // Удаляем его оттуда
+
+                        // Добавляем соответствующее событие (event) в основной
+                        // BLoC-компонент главного экрана приложения
+                        // (подробнее в директории ../home/bloc)
+                        context.read<HomeBloc>().add(
+                              RemoveFavoriteShowEvent(
+                                model: widget
+                                    .data.data?.results?[listElementIndex],
+                              ),
+                            );
+                      } else {
+                        // Иначе делаем сериал избранным
+                        widget.data.data?.results?[listElementIndex]
+                            .isFavorite = true;
+
+                        // Добавляем соответствующее событие в HomeBloc
+                        context.read<HomeBloc>().add(
+                              AddFavoriteShowEvent(
+                                model: widget
+                                    .data.data?.results?[listElementIndex],
+                              ),
+                            );
+                      }
                     },
                     icon: widget.data.data?.results?[listElementIndex]
                                 .isFavorite ??
@@ -101,7 +138,7 @@ class _SeriesGridState extends State<SeriesGrid> {
                         ? const Icon(Icons.favorite) // true
                         : const Icon(Icons.favorite_border), // false
                     style: IconButton.styleFrom(
-                      // Отключён эффект чернильницы при нажатии
+                      // Отключаем эффект чернильницы при нажатии
                       splashFactory: NoSplash.splashFactory,
                     ),
                     color: Colors.red,
