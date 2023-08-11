@@ -58,7 +58,7 @@ class DBSeriesChangeEvent extends HomeEvent {
 
 // Событие сортировки списка сериалов по убыванию их IMDb-рейтинга
 class SeriesRatingSortEvent extends HomeEvent {
-  final List<ShowCardModel> series; // Список сериалов (общий или избранный)
+  final List<ShowCardModel>? series; // Список сериалов (общий или избранный)
 
   const SeriesRatingSortEvent({required this.series});
 }

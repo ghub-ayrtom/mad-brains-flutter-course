@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lesson_3_homework/components/constants.dart';
 import 'package:lesson_3_homework/components/delayed_action.dart';
+import 'package:lesson_3_homework/components/locals/locals.dart';
 import 'package:lesson_3_homework/domain/models/home_model.dart';
 import 'package:lesson_3_homework/domain/models/show_card_model.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_bloc.dart';
@@ -95,9 +96,9 @@ class HomePageState extends State<HomePage> {
           maxLines: 1,
           style: const TextStyle(color: Colors.white),
           cursorColor: Colors.white,
-          decoration: const InputDecoration(
-            hintText: Local.searchTextFieldHint,
-            hintStyle: TextStyle(color: Colors.white54),
+          decoration: InputDecoration(
+            hintText: context.locale.searchTextFieldHint,
+            hintStyle: const TextStyle(color: Colors.white54),
             border: InputBorder.none,
           ),
           onChanged: _onSearchFieldTextChanged,

@@ -117,7 +117,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   // их IMDb-рейтинга
   void _onSeriesSorted(SeriesRatingSortEvent event, Emitter<HomeState> emit) {
     // event.series - список сериалов (List<ShowCardModel>)
-    event.series.sort((a, b) => b.rating!.compareTo(a.rating!));
+    event.series?.sort((a, b) => b.rating!.compareTo(a.rating!));
     HomeModel model = HomeModel(event.series);
 
     // Если сортировка осуществляется на основной странице (Feed)

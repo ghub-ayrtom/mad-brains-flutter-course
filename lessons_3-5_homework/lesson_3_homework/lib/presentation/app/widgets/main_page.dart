@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lesson_3_homework/components/constants.dart';
+import 'package:lesson_3_homework/components/locals/locals.dart';
 import 'package:lesson_3_homework/presentation/home/pages/favorites_page.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_bloc.dart';
 import 'package:lesson_3_homework/presentation/home/bloc/home_event.dart';
@@ -20,35 +20,38 @@ class Tab {
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
-  // Список страниц в нижнем навигационном меню (BottomNavigationBar)
-  static List<Tab> tabs = [
-    const Tab(
-      icon: Icon(Icons.local_movies_outlined),
-      label: Local.homePageBNBText,
-      // Страница со списком сериалов
-      page: HomePage(),
-    ),
-    const Tab(
-      icon: Icon(Icons.favorite),
-      label: Local.favoritesPageTitle,
-      // Страница со списком избранных (favorites) сериалов
-      page: FavoritesPage(),
-    ),
-    const Tab(
-      icon: Icon(Icons.newspaper),
-      label: Local.newsPagesTitle,
-      // Страница со списком новостей
-      page: NewsPage(
-        title: Local.newsPagesTitle,
-      ),
-    ),
-  ];
-
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
+  // Список страниц в нижнем навигационном меню (BottomNavigationBar)
+  List<Tab>? tabs;
+
+  // Вспомогательный метод для заполнения данными списка страниц
+  void _fillTabsList() {
+    tabs = [
+      Tab(
+        icon: const Icon(Icons.local_movies_outlined),
+        label: context.locale.homePageBNBText,
+        // Страница со списком сериалов
+        page: const HomePage(),
+      ),
+      Tab(
+        icon: const Icon(Icons.favorite),
+        label: context.locale.favoritesPageTitle,
+        // Страница со списком избранных (favorites) сериалов
+        page: const FavoritesPage(),
+      ),
+      Tab(
+        icon: const Icon(Icons.newspaper),
+        label: context.locale.newsPagesTitle,
+        // Страница со списком новостей
+        page: const NewsPage(),
+      ),
+    ];
+  }
+
   // Функция изменения индекса выбранной страницы в нижнем навигационном меню
   void _onItemTapped(int index) {
     // Добавляем новое событие переключения вкладки в нижнем навигационном меню
@@ -58,7 +61,8 @@ class _MainPageState extends State<MainPage> {
     context.read<HomeBloc>().add(TabSwitchEvent(selectedTabIndex: index));
   }
 
-  // Вспомогательный метод для добавления градиента в виджет BottomNavigationBar
+  // Вспомогательный метод для генерации списка страниц, а также для добавления
+  // градиента в виджет BottomNavigationBar
   Widget _createBottomNavigationBar(int? index) {
     return Container(
       decoration: BoxDecoration(
@@ -71,9 +75,9 @@ class _MainPageState extends State<MainPage> {
       child: BottomNavigationBar(
         // Генерация списка иконок (страниц) в нижнем навигационном меню
         items: List.generate(
-          MainPage.tabs.length,
+          tabs!.length,
           (index) {
-            final Tab tab = MainPage.tabs[index];
+            final Tab tab = tabs![index];
 
             return BottomNavigationBarItem(
               icon: tab.icon,
@@ -93,6 +97,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    _fillTabsList();
+
     // BlocBuilder позволяет подписать его дочерний виджет на изменение
     // состояния и перерисовать его в случае необходимости
     // (задано условие перерисовки buildWhen) или каждый раз при добавлении
@@ -108,7 +114,7 @@ class _MainPageState extends State<MainPage> {
           return Scaffold(
             // state.selectedTabIndex - индекс текущей выбранной страницы в
             // новом состоянии state
-            body: MainPage.tabs.elementAt(state.selectedTabIndex ?? 0).page,
+            body: tabs!.elementAt(state.selectedTabIndex ?? 0).page,
             bottomNavigationBar:
                 _createBottomNavigationBar(state.selectedTabIndex),
             backgroundColor: Colors.black,

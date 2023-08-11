@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lesson_3_homework/components/locals/locals.dart';
 import 'package:lesson_3_homework/presentation/home/widgets/news_list.dart';
 import 'package:lesson_3_homework/presentation/settings/pages/settings_page.dart';
 
 // Виджет экрана со списком новостей
 class NewsPage extends StatefulWidget {
-  const NewsPage({super.key, required this.title});
-
-  final String title;
+  const NewsPage({super.key});
 
   @override
   State<NewsPage> createState() => NewsPageState();
@@ -26,15 +25,8 @@ class NewsPageState extends State<NewsPage> {
             ),
           ),
         ),
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.black54,
-          ),
-        ),
         title: Text(
-          widget.title,
+          context.locale.newsPagesTitle,
           style: const TextStyle(
             color: Colors.white,
           ),

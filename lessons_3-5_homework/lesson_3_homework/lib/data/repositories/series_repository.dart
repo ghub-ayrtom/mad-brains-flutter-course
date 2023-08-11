@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:lesson_3_homework/components/constants.dart' as constant;
 import 'package:lesson_3_homework/data/db/database.dart';
 import 'package:lesson_3_homework/data/dtos/show_card_dto.dart';
@@ -11,6 +12,9 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 // Класс репозитория для получения данных о сериалах по HTTP-запросам
 class SeriesRepository {
+  // Контекст главного экрана приложения для обращения через него к объекту
+  // словаря текущей локализации
+  final BuildContext mainContext;
   // Функция обработки ошибок
   final Function(String, String) onErrorHandler;
   // Основной объект библиотеки Dio для выполнения HTTP-запросов
@@ -18,7 +22,7 @@ class SeriesRepository {
   // Основной объект базы данных библиотеки Drift
   late final Database _db;
 
-  SeriesRepository({required this.onErrorHandler}) {
+  SeriesRepository(this.mainContext, {required this.onErrorHandler}) {
     _dio = Dio()
       ..interceptors.addAll([
         PrettyDioLogger(
@@ -27,7 +31,7 @@ class SeriesRepository {
         ),
         // Прерывание Dio на ошибку через специальный класс интерцептора
         // (файл dio_error_interceptor.dart)
-        ErrorInterceptor(onErrorHandler),
+        ErrorInterceptor(mainContext, onErrorHandler),
       ]);
 
     _db = Database(); // Инициализируем базу данных

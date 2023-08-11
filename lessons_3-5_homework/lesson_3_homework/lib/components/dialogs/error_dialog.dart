@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lesson_3_homework/components/constants.dart';
+import 'package:lesson_3_homework/components/locals/locals.dart';
 import 'package:lesson_3_homework/presentation/home/pages/home_page.dart';
 
 // Метод вызова диалога с ошибкой
@@ -56,7 +56,7 @@ class ExceptionDialog extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 15.0),
                 child: Text(
                   textAlign: TextAlign.center,
-                  '${Local.error} ${exception ?? Local.unknown}',
+                  '${context.locale.error} ${exception ?? context.locale.unknown}',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16,

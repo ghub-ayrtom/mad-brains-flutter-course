@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lesson_3_homework/components/constants.dart';
+import 'package:lesson_3_homework/components/locals/locals.dart';
 import 'package:lesson_3_homework/domain/models/news_card_model.dart';
 import 'package:lesson_3_homework/presentation/app/widgets/image_network.dart';
 import 'package:lesson_3_homework/presentation/settings/pages/settings_page.dart';
@@ -60,6 +60,9 @@ class NewsDetailsState extends State<NewsDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // Отключение кнопки "Назад", которая создаётся по умолчанию при
+        // переходе на новую страницу через навигатор
+        automaticallyImplyLeading: false,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -69,16 +72,9 @@ class NewsDetailsState extends State<NewsDetails> {
             ),
           ),
         ),
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.black54,
-          ),
-        ),
-        title: const Text(
-          Local.newsPagesTitle,
-          style: TextStyle(
+        title: Text(
+          context.locale.newsPagesTitle,
+          style: const TextStyle(
             color: Colors.white,
           ),
         ),

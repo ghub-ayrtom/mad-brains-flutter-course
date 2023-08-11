@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "578445027240",
+    "project_id": "slapp-6646a",
+    "storage_bucket": "slapp-6646a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578445027240:android:aab31e749b284a57a99f9d",
+        "android_client_info": {
+          "package_name": "com.example.lesson_3_homework"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "578445027240-6rh7ekqpvav10p5i2h3hn9pb30kof4aq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0jGhQ8UIqYHKytDnsooCXsAnH10ROylQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "578445027240-6rh7ekqpvav10p5i2h3hn9pb30kof4aq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

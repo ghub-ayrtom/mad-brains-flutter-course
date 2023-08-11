@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:html/parser.dart';
-import 'package:lesson_3_homework/components/constants.dart';
+import 'package:lesson_3_homework/components/locals/locals.dart';
 import 'package:lesson_3_homework/domain/models/home_model.dart';
 import 'package:lesson_3_homework/domain/models/show_card_model.dart';
 import 'package:lesson_3_homework/presentation/app/widgets/show_card_widget.dart';
@@ -25,8 +25,27 @@ class SeriesGrid extends StatefulWidget {
 class _SeriesGridState extends State<SeriesGrid> {
   // Асинхронный метод для отображения виджета SimpleDialog с описанием выбранного сериала
   Future _showMovieDescription(int index) async {
-    // Текст для отображения в диалоге, если у сериала нет описания
-    String parsedString = "Unknown";
+    Text titleText = Text(context.locale.unknown);
+    // Текст по умолчанию для отображения в диалоге, если у сериала нет описания
+    String parsedString = context.locale.unknown;
+    // Двузначный код языка текущей локализации приложения
+    String currentLanguageCode = Localizations.localeOf(context).languageCode;
+
+    switch (currentLanguageCode) {
+      case "ru":
+        // "Описание сериала ...", если язык приложения русский
+        titleText = Text(
+          "${context.locale.description} ${widget.data.data?.results?[index].title}",
+        );
+        break;
+
+      default:
+        // "... {context.locale.description}" при любом другом языке
+        titleText = Text(
+          "${widget.data.data?.results?[index].title} ${context.locale.description}",
+        );
+        break;
+    }
 
     // Если у сериала есть описание
     if (widget.data.data?.results?[index].description != null) {
@@ -39,9 +58,7 @@ class _SeriesGridState extends State<SeriesGrid> {
       context: context,
       builder: (BuildContext inContext) {
         return SimpleDialog(
-          title: Text(
-            "${widget.data.data?.results?[index].title} ${Local.description}",
-          ),
+          title: titleText,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(10),

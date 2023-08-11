@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lesson_3_homework/components/locals/locals.dart';
 import 'package:lesson_3_homework/domain/models/show_card_model.dart';
 import 'package:lesson_3_homework/presentation/app/widgets/image_network.dart';
 
@@ -35,7 +36,7 @@ class ShowCardWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 4.5),
                 child: Text(
-                  showCardModel?.releaseDate ?? "",
+                  showCardModel?.releaseDate ?? context.locale.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -65,7 +66,7 @@ class ShowCardWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                 child: Text(
-                  showCardModel?.title ?? "",
+                  showCardModel?.title ?? context.locale.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -76,7 +77,7 @@ class ShowCardWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                showCardModel?.language ?? "Unknown",
+                showCardModel?.language ?? context.locale.unknown,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
